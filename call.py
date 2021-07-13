@@ -1,7 +1,7 @@
 import requests
 import json
 
-api_key = "	RGAPI-6a377f3a-7ddf-42fe-9f2c-bf1469161a10"
+api_key = "RGAPI-6a377f3a-7ddf-42fe-9f2c-bf1469161a10"
 
 name = input("Summoner GAME ID : ")
 URL  = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+name
