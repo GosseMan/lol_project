@@ -28,3 +28,6 @@ for matches in match_object:
         # print(champ_object["data"][champ]["key"], " /// ", matches["champion"])
         if int(champ_object["data"][champ]["key"])==matches["champion"]:
             print(champ)
+
+for matches in match_object:
+    print(matches["role"],"-",matches["lane"])
