@@ -23,11 +23,23 @@ match_object = json_object.get("matches")
 version = "11.14.1"
 champ_json = requests.get("http://ddragon.leagueoflegends.com/cdn/" + version + "/data/en_US/champion.json")
 champ_object = json.loads(champ_json.text)
+
+for matches in match_object:
+    print(matches["role"],"-",matches["lane"])
+
+
+with open('champ_engtokor.json', 'w') as champ_engtokor:
+    print(champ_engtokor)
+    champ_EtoK = json.load(champ_engtokor)
+    
+    print (champ_EtoK)
+
 for matches in match_object:
     for champ in champ_object["data"]:
         # print(champ_object["data"][champ]["key"], " /// ", matches["champion"])
         if int(champ_object["data"][champ]["key"])==matches["champion"]:
-            print(champ)
+            print(champ_EtoK[champ])
 
-for matches in match_object:
-    print(matches["role"],"-",matches["lane"])
+'''
+할일 : dump / dumps, load / loads 차이 찾기. champ_engtokor.json 읽는 법 찾기.
+'''
