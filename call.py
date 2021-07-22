@@ -24,18 +24,18 @@ version = "11.14.1"
 champ_json = requests.get("http://ddragon.leagueoflegends.com/cdn/" + version + "/data/en_US/champion.json")
 champ_object = json.loads(champ_json.text)
 
-for matches in match_object:
-    print(matches["role"],"-",matches["lane"])
 
-'''
-with open('champ_engtokor.json', 'w') as champ_engtokor:
-    print(champ_engtokor)
+
+with open('champ_engtokor.json', 'r') as champ_engtokor:
     champ_EtoK = json.load(champ_engtokor)
-    print (champ_EtoK)
-'''
+
+with open('game_type.json', 'r') as game_type:
+    game_code = json.load(game_type)
+    
 for matches in match_object:
     for champ in champ_object["data"]:
         # print(champ_object["data"][champ]["key"], " /// ", matches["champion"])
         if int(champ_object["data"][champ]["key"])==matches["champion"]:
-            print(champ)
+            print(game_code[str(matches['queue'])],'-',champ_EtoK[champ], '-' ,matches["role"],":",matches["lane"])
+
 
