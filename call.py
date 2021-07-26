@@ -25,17 +25,18 @@ champ_json = requests.get("http://ddragon.leagueoflegends.com/cdn/" + version + 
 champ_object = json.loads(champ_json.text)
 
 
-
 with open('champ_engtokor.json', 'r') as champ_engtokor:
     champ_EtoK = json.load(champ_engtokor)
 
 with open('game_type.json', 'r') as game_type:
     game_code = json.load(game_type)
-    
+
 for matches in match_object:
     for champ in champ_object["data"]:
         # print(champ_object["data"][champ]["key"], " /// ", matches["champion"])
         if int(champ_object["data"][champ]["key"])==matches["champion"]:
             print(game_code[str(matches['queue'])],'-',champ_EtoK[champ], '-' ,matches["role"],":",matches["lane"])
 
-
+exp_json = requests.get("https://kr.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/"+json_summoner['id']+"/by-champion/"+str(champ_object['data']['Gnar']['key']), headers={"X-RIOT-Token":api_key})
+exp_object = json.loads(exp_json.text)
+print(exp_object)
