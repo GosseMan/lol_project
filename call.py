@@ -36,7 +36,6 @@ for matches in match_object:
         # print(champ_object["data"][champ]["key"], " /// ", matches["champion"])
         if int(champ_object["data"][champ]["key"])==matches["champion"]:
             print(game_code[str(matches['queue'])],'-',champ_EtoK[champ], '-' ,matches["role"],":",matches["lane"])
-
-exp_json = requests.get("https://kr.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/"+json_summoner['id']+"/by-champion/"+str(champ_object['data']['Gnar']['key']), headers={"X-RIOT-Token":api_key})
-exp_object = json.loads(exp_json.text)
-print(exp_object)
+            exp_json = requests.get("https://kr.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/"+json_summoner['id']+"/by-champion/"+str(matches['champion']), headers={"X-RIOT-Token":api_key})
+            exp_object = json.loads(exp_json.text)
+            print("숙련도 : ",exp_object['championPoints'])
