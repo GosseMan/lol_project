@@ -20,7 +20,7 @@ res_match = requests.get(URL_match, headers={"X-RIOT-Token":api_key})
 print(res_match.text)
 json_object = json.loads(res_match.text)
 match_object = json_object.get("matches")
-version = "11.14.1"
+version = "11.15.1"
 champ_json = requests.get("http://ddragon.leagueoflegends.com/cdn/" + version + "/data/en_US/champion.json")
 champ_object = json.loads(champ_json.text)
 
@@ -31,11 +31,15 @@ with open('champ_engtokor.json', 'r') as champ_engtokor:
 with open('game_type.json', 'r') as game_type:
     game_code = json.load(game_type)
 
+
 for matches in match_object:
     for champ in champ_object["data"]:
         # print(champ_object["data"][champ]["key"], " /// ", matches["champion"])
         if int(champ_object["data"][champ]["key"])==matches["champion"]:
-            print(game_code[str(matches['queue'])],'-',champ_EtoK[champ], '-' ,matches["role"],":",matches["lane"])
+            if str(matches['queue']) in game_code:
+                print(game_code[str(matches['queue'])],'-',champ_EtoK[champ], '-' ,matches["role"],":",matches["lane"])
+            else:
+                print('기타모드 -',champ_EtoK[champ], '-' ,matches["role"],":",matches["lane"])
             exp_json = requests.get("https://kr.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/"+json_summoner['id']+"/by-champion/"+str(matches['champion']), headers={"X-RIOT-Token":api_key})
             exp_object = json.loads(exp_json.text)
             print("숙련도 : ",exp_object['championPoints'])
