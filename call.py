@@ -15,6 +15,8 @@ else:
 
 json_summoner = json.loads(res.text)
 input_account = json_summoner['accountId']
+# v5로 바꿔야 할거같음
+# URL_match = "https://kr.api.riotgames.com/lol/match/v5/matches/by-puuid/" +json_summoner['puuid']+"/ids"
 URL_match = "https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/" + input_account
 res_match = requests.get(URL_match, headers={"X-RIOT-Token":api_key})
 print(res_match.text)
@@ -42,4 +44,12 @@ for matches in match_object:
                 print('기타모드 -',champ_EtoK[champ], '-' ,matches["role"],":",matches["lane"])
             exp_json = requests.get("https://kr.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/"+json_summoner['id']+"/by-champion/"+str(matches['champion']), headers={"X-RIOT-Token":api_key})
             exp_object = json.loads(exp_json.text)
+            
             print("숙련도 : ",exp_object['championPoints'])
+            URL_matchdetail = "https://kr.api.riotgames.com/lol/match/v4/matches/" +str(matches["gameId"])
+            matchdetail_json = requests.get(URL_matchdetail,headers={"X-RIOT-Token":api_key})
+            matchdetail_object = json.loads(matchdetail_json.text)
+            # print(matchdetail_json.text)
+            print("승패 : "+matchdetail_object['teams'][0]['win'])
+            
+
