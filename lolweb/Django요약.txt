@@ -1,0 +1,335 @@
+path() 함수에는 2개의 필수 인수인 route 와 view, 2개의 선택 가능한 인수로 kwargs 와 name 까지 모두 4개의 인수가 전달 되었습니다. 이 시점에서, 이 인수들이 무엇인지 살펴보는 것은 의미가 있습니다.
+
+path() 인수: route¶
+route 는 URL 패턴을 가진 문자열 입니다.  요청이 처리될 때, Django 는 urlpatterns 의 첫 번째 패턴부터 시작하여, 일치하는 패턴을 찾을 때 까지 요청된 URL 을 각 패턴과 리스트의 순서대로 비교합니다.
+
+패턴들은 GET 이나 POST 의 매개 변수들, 혹은 도메인 이름을 검색하지 않습니다. 예를 들어, https://www.example.com/myapp/ 이 요청된 경우, URLconf 는 오직 myapp/ 부분만 바라 봅니다. https://www.example.com/myapp/?page=3, 같은 요청에도, URLconf 는 역시 myapp/ 부분만 신경씁니다.
+
+path() 인수: view¶
+Django 에서 일치하는 패턴을 찾으면, HttpRequest 객체를 첫번째 인수로 하고, 경로로 부터 〈캡처된〉 값을 키워드 인수로하여 특정한 view 함수를 호출합니다. 나중에 이에 대한 간단한 예제를 살펴보겠습니다.
+
+path() 인수: kwargs¶
+임의의 키워드 인수들은 목표한 view 에 사전형으로 전달됩니다. 그러나 이 튜토리얼에서는 사용하지 않을겁니다.
+
+path() 인수: name¶
+URL 에 이름을 지으면, 템플릿을 포함한 Django 어디에서나 명확하게 참조할 수 있습니다. 이 강력한 기능을 이용하여, 단 하나의 파일만 수정해도 project 내의 모든 URL 패턴을 바꿀 수 있도록 도와줍니다.
+
+mysite/settings.py를 편집할 때, 당신의 시간대에 맞춰 TIME_ZONE 값을 설정하세요.
+
+또한, 이 파일의 윗쪽에 있는 INSTALLED_APPS 에 대해 언급하자면, 이 파일은 현재 Django 인스턴스에서 활성화된 모든 Django 어플리케이션들의 이름이 담겨 있습니다. 앱들은 다수의 프로젝트에서 사용될 수 있고, 다른 프로젝트에서 쉽게 사용될 수 있도록 패키징하여 배포할 수 있습니다.
+
+기본적으로는, INSTALLED_APPS는 Django와 함께 딸려오는 다음의 앱들을 포함합니다.
+
+django.contrib.admin – 관리용 사이트. 곧 사용하게 될 겁니다.
+django.contrib.auth – 인증 시스템.
+django.contrib.contenttypes – 컨텐츠 타입을 위한 프레임워크.
+django.contrib.sessions – 세션 프레임워크.
+django.contrib.messages – 메세징 프레임워크.
+django.contrib.staticfiles – 정적 파일을 관리하는 프레임워크.
+이 어플리케이션들은 일반적인 경우에 사용하기 편리하도록 기본으로 제공됩니다.
+
+
+진행순서
+
+프로젝트 시작
+> django-admin startproject mysite
+: lolweb 디렉토리 생성. 
+하위파일 설명
+mysite는 프로젝트를 담는 container임. 이름 바꿔도 상관없음.
+manage.py: Django 프로젝트와 다양한 방법으로 상호작용 하는 커맨드라인의 유틸리티 입니다. manage.py 에 대한 자세한 정보는 django-admin and manage.py 에서 확인할 수 있습니다.
+mysite/ 디렉토리 내부에는 프로젝트를 위한 실제 Python 패키지들이 저장됩니다. 이 디렉토리 내의 이름을 이용하여, (mysite.urls 와 같은 식으로) 프로젝트의 어디서나 Python 패키지들을 임포트할 수 있습니다.
+mysite/__init__.py: Python으로 하여금 이 디렉토리를 패키지처럼 다루라고 알려주는 용도의 단순한 빈 파일입니다. Python 초심자라면, Python 공식 홈페이지의 패키지를 읽어보세요.
+mysite/settings.py: 현재 Django 프로젝트의 환경 및 구성을 저장합니다. Django settings에서 환경 설정이 어떻게 동작하는지 확인할 수 있습니다.
+mysite/urls.py: 현재 Django project 의 URL 선언을 저장합니다. Django 로 작성된 사이트의 《목차》 라고 할 수 있습니다. URL dispatcher 에서 URL 에 대한 자세한 내용을 읽어보세요.
+mysite/asgi.py: An entry-point for ASGI-compatible web servers to serve your project. See ASGI를 사용하여 배포하는 방법 for more details.
+mysite/wsgi.py: 현재 프로젝트를 서비스하기 위한 WSGI 호환 웹 서버의 진입점입니다. WSGI를 사용하여 배포하는 방법를 읽어보세요.
+
+mysite 디렉토리로 이동해서
+> python manage.py runserver
+출력내용
+Performing system checks...
+
+System check identified no issues (0 silenced).
+
+You have unapplied migrations; your app may not work properly until they are applied.
+Run 'python manage.py migrate' to apply them.
+
+8월 13, 2021 - 15:50:53
+Django version 3.2, using settings 'mysite.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+Django 개발서버 실행.
+* runserver 의 자동 변경 기능
+개발 서버는 요청이 들어올 때마다 자동으로 Python 코드를 다시 불러옵니다. 코드의 변경사항을 반영하기 위해서 굳이 서버를 재기동 하지 않아도 됩니다. 그러나, 파일을 추가하는 등의 몇몇의 동작은 개발서버가 자동으로 인식하지 못하기 때문에, 이런 상황에서는 서버를 재기동 해야 적용됩니다.
+
+app 생성
+> python manage.py startapp polls
+polls/
+    __init__.py
+    admin.py
+    apps.py
+    migrations/
+        __init__.py
+    models.py
+    tests.py
+    views.py
+
+view란 : 
+ex)
+from django.http import HttpResponse
+
+def index(request):
+    return HttpResponse("Hello, world. You're at the polls index.")
+
+조각조각 나뉜 모델과 템플릿들을 연결하는 역할을 하는 것이 뷰view
+어플리케이션의 "로직"을 만드는 곳으로 모델에서 필요한 정보를 받아와서, 로직을 작성하고, 템플릿에 전달하는 역할을 함 (url에서도 정보를 받아 올 수 있음)
+모델 : 데이터베이스의 구조
+템플릿 : 일정한 형태로 정보들을 보여주기 위해 재사용할 수 있는 파일, 장고의 템플릿 양식은 HTML
+모델(데이터베이스) 혹은 url --> 뷰 --> 템플릿(HTML) (출처 https://ychae-leah.tistory.com/140)
+
+뷰를 호출하기 위한 urls.py를 생성,
+polls/urls.py¶
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='index'),
+]
+
+이후 최상위 URLconf에서 polls.urls를 볼 수 있도록 설정. 상위 디렉토리의 urls.py를 열고,
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path('polls/', include('polls.urls')),
+    path('admin/', admin.site.urls),
+]
+
+- DB설치
+상위 디렉토리의 settings.py를 보면 INSTALLED_APPS가 있는데, 기본적으로
+django.contrib.admin – 관리용 사이트. 곧 사용하게 될 겁니다.
+django.contrib.auth – 인증 시스템.
+django.contrib.contenttypes – 컨텐츠 타입을 위한 프레임워크.
+django.contrib.sessions – 세션 프레임워크.
+django.contrib.messages – 메세징 프레임워크.
+django.contrib.staticfiles – 정적 파일을 관리하는 프레임워크.
+가 있음
+
+> python manage.py migrate
+에서 migrate는 INSTALLED_APPS를 보고 필수적인 DB 테이블을 만듬
+
+- 모델
+모델이란, your database layout, with additional metadata.
+예시
+from django.db import models
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    pub_date = models.DateTimeField('date published')
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+
+모델의 활성화
+모델에 대한 이 작은 코드가, Django에게는 상당한 양의 정보를 전달합니다. Django는 이 정보를 가지고 다음과 같은 일을 할 수 있습니다.
+
+이 앱을 위한 데이터베이스 스키마 생성(CREATE TABLE 문)
+Question과 Choice 객체에 접근하기 위한 Python 데이터베이스 접근 API를 생성
+그러나, 가장 먼저 현재 프로젝트에게 polls 앱이 설치되어 있다는 것을 알려야 합니다
+-> settings.py의 INSTALLED_APP에 'polls.apps.PollsConfig' 추가
+
+> python manage.py makemigrations polls
+makemigrations 는 모델에 대한 변경사실과 변경사항을 migration에 저장하고 싶다는 뜻
+
+> python manage.py sqlmigrate polls 0001
+sqlmigrate는 migration 인수를 이름으로 받고, 실행하는 sql문을 보여줌
+
+출력예시
+BEGIN;
+--
+-- Create model Question
+--
+CREATE TABLE "polls_question" (
+    "id" serial NOT NULL PRIMARY KEY,
+    "question_text" varchar(200) NOT NULL,
+    "pub_date" timestamp with time zone NOT NULL
+);
+--
+-- Create model Choice
+--
+CREATE TABLE "polls_choice" (
+    "id" serial NOT NULL PRIMARY KEY,
+    "choice_text" varchar(200) NOT NULL,
+    "votes" integer NOT NULL,
+    "question_id" integer NOT NULL
+);
+ALTER TABLE "polls_choice"
+  ADD CONSTRAINT "polls_choice_question_id_c5b4b260_fk_polls_question_id"
+    FOREIGN KEY ("question_id")
+    REFERENCES "polls_question" ("id")
+    DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "polls_choice_question_id_c5b4b260" ON "polls_choice" ("question_id");
+
+COMMIT;
+
+이제,
+> python manage.py migrate
+실행하면, 데이터베이스 모델과 관련 테이블이 생성됨
+migration에는 좀 복잡한 내용이 있는데 우선은 모델을 변경하는 단계 간단하게
+
+1. (models.py 에서) 모델을 변경합니다.
+2. python manage.py makemigrations을 통해 이 변경사항에 대한 마이그레이션을 만드세요.
+3. python manage.py migrate 명령을 통해 변경사항을 데이터베이스에 적용하세요.
+
+마이그레이션을 만드는 명령과 적용하는 명령이 분리된 것은 버전 관리 시스템에 마이그레이션을 커밋하고 앱과 함께 출시할 수 있도록 하기 위해서입니다. 이는 당신의 개발을 쉽게 해줄 뿐 아니라, 다른 개발자가 프로덕션에서 사용할 수 있게 해줍니다.
+
+Python 쉘에서 API 다루기
+> python manage.py shell
+
+예시
+>>> from polls.models import Choice, Question  # Import the model classes we just wrote.
+
+# No questions are in the system yet.
+>>> Question.objects.all()
+<QuerySet []>
+
+# Create a new Question.
+# Support for time zones is enabled in the default settings file, so
+# Django expects a datetime with tzinfo for pub_date. Use timezone.now()
+# instead of datetime.datetime.now() and it will do the right thing.
+>>> from django.utils import timezone
+>>> q = Question(question_text="What's new?", pub_date=timezone.now())
+
+# Save the object into the database. You have to call save() explicitly.
+>>> q.save()
+
+# Now it has an ID.
+>>> q.id
+1
+
+# Access model field values via Python attributes.
+>>> q.question_text
+"What's new?"
+>>> q.pub_date
+datetime.datetime(2012, 2, 26, 13, 0, 0, 775217, tzinfo=<UTC>)
+
+# Change values by changing the attributes, then calling save().
+>>> q.question_text = "What's up?"
+>>> q.save()
+
+# objects.all() displays all the questions in the database.
+>>> Question.objects.all()
+<QuerySet [<Question: Question object (1)>]>
+
+__str__() 메소드를 추가하여 객체의 표현을 대화식 프롬프트에서 편하게 보고, Django가 자동 생성하는 관리 사이트에서도 객체 표현을 사용.
+
+예시)
+polls/models.py 에 추가
+
+import datetime
+
+from django.db import models
+from django.utils import timezone
+
+class Question(models.Model):
+    # ...
+    def was_published_recently(self):
+        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+
+쉘 실행
+>>> from polls.models import Choice, Question
+
+# Make sure our __str__() addition worked.
+>>> Question.objects.all()
+<QuerySet [<Question: What's up?>]>
+
+# Django provides a rich database lookup API that's entirely driven by
+# keyword arguments.
+>>> Question.objects.filter(id=1)
+<QuerySet [<Question: What's up?>]>
+>>> Question.objects.filter(question_text__startswith='What')
+<QuerySet [<Question: What's up?>]>
+
+# Get the question that was published this year.
+>>> from django.utils import timezone
+>>> current_year = timezone.now().year
+>>> Question.objects.get(pub_date__year=current_year)
+<Question: What's up?>
+
+# Request an ID that doesn't exist, this will raise an exception.
+>>> Question.objects.get(id=2)
+Traceback (most recent call last):
+    ...
+DoesNotExist: Question matching query does not exist.
+
+# Lookup by a primary key is the most common case, so Django provides a
+# shortcut for primary-key exact lookups.
+# The following is identical to Question.objects.get(id=1).
+>>> Question.objects.get(pk=1)
+<Question: What's up?>
+
+# Make sure our custom method worked.
+>>> q = Question.objects.get(pk=1)
+>>> q.was_published_recently()
+True
+
+# Give the Question a couple of Choices. The create call constructs a new
+# Choice object, does the INSERT statement, adds the choice to the set
+# of available choices and returns the new Choice object. Django creates
+# a set to hold the "other side" of a ForeignKey relation
+# (e.g. a question's choice) which can be accessed via the API.
+>>> q = Question.objects.get(pk=1)
+
+# Display any choices from the related object set -- none so far.
+>>> q.choice_set.all()
+<QuerySet []>
+
+# Create three choices.
+>>> q.choice_set.create(choice_text='Not much', votes=0)
+<Choice: Not much>
+>>> q.choice_set.create(choice_text='The sky', votes=0)
+<Choice: The sky>
+>>> c = q.choice_set.create(choice_text='Just hacking again', votes=0)
+
+# Choice objects have API access to their related Question objects.
+>>> c.question
+<Question: What's up?>
+
+# And vice versa: Question objects get access to Choice objects.
+>>> q.choice_set.all()
+<QuerySet [<Choice: Not much>, <Choice: The sky>, <Choice: Just hacking again>]>
+>>> q.choice_set.count()
+3
+
+# The API automatically follows relationships as far as you need.
+# Use double underscores to separate relationships.
+# This works as many levels deep as you want; there's no limit.
+# Find all Choices for any question whose pub_date is in this year
+# (reusing the 'current_year' variable we created above).
+>>> Choice.objects.filter(question__pub_date__year=current_year)
+<QuerySet [<Choice: Not much>, <Choice: The sky>, <Choice: Just hacking again>]>
+
+# Let's delete one of the choices. Use delete() for that.
+>>> c = q.choice_set.filter(choice_text__startswith='Just hacking')
+>>> c.delete()
+
+* # a set to hold the "other side" of a ForeignKey relation
+# (e.g. a question's choice) which can be accessed via the API.
+
+- 관리자 생성
+> python manage.py createsuperuser
+원하는 username 을 입력하고 엔터를 누르세요
+
+Username: admin
+그런 다음 원하는 이메일 주소를 입력하라는 메시지가 표시됩니다.
+
+Email address: admin@example.com
+마지막으로, 암호를 입력하세요. 암호를 두번 물어보게 되는데, 두번째 입력하는 암호를 올바로 입력했는지를 확인하기 위한 암호입니다.
+
+Password: **********
+Password (again): *********
+Superuser created successfully.
