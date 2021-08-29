@@ -2,7 +2,14 @@ import json
 import requests
 import time
 api_key = "RGAPI-6a377f3a-7ddf-42fe-9f2c-bf1469161a10"
-version = "11.15.1"
+tmp_key = "60ysuDs_5TzndzPkQa8fBT3XAikjhb05cAHcc9WQ-bd05b9e25qw5Dw6Yvh6CvGU1iD5L4xqfFNlnA"
+
+def latest_version():
+    version_url = requests.get('https://ddragon.leagueoflegends.com/api/versions.json')
+    version_list = json.loads(version_url.text)
+    return version_list[0]
+version = latest_version()
+
 def call_summoner():
     name = input("Summoner GAME ID : ")
     url  = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+name
@@ -11,21 +18,21 @@ def call_summoner():
         print(res.text)
         return json.loads(res.text)
     elif res.status_code == 400:
-        print("Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
+        print("Summoner Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
     elif res.status_code == 401:
-        print("Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
+        print("Summoner Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
     elif res.status_code == 403:
-        print("Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
+        print("Summoner Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
     elif res.status_code == 404:
-        print("Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
+        print("Summoner Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
     elif res.status_code == 415:
-        print("Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
+        print("Summoner Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
     elif res.status_code == 429:
-        print("Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
+        print("Summoner Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
     elif res.status_code == 500:
         print("Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
     elif res.status_code == 503:
-        print("Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")        
+        print("Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")
     else:
         print("Unknown Error")
     return 0
@@ -36,24 +43,24 @@ def call_matchlist(accountid):
     # URL_match = "https://kr.api.riotgames.com/lol/match/v5/matches/by-puuid/" +summoner_json+['puuid']+"/ids"
     res = requests.get(url, headers={"X-RIOT-Token":api_key})
     if res.status_code == 200:
-        print(res.text)
+        #print(res.text)
         return (json.loads(res.text)).get("matches")
     elif res.status_code == 400:
-        print("Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
+        print("Matchlist Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
     elif res.status_code == 401:
-        print("Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
+        print("Matchlist Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
     elif res.status_code == 403:
-        print("Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
+        print("Matchlist Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
     elif res.status_code == 404:
-        print("Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
+        print("Matchlist Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
     elif res.status_code == 415:
-        print("Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
+        print("Matchlist Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
     elif res.status_code == 429:
-        print("Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
+        print("Matchlist Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
     elif res.status_code == 500:
-        print("Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
+        print("Matchlist Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
     elif res.status_code == 503:
-        print("Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")        
+        print("Matchlist Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")
     else:
         print("Unknown Error")
     return 0
@@ -64,21 +71,21 @@ def call_champ():
     if res.status_code == 200:
         return json.loads(res.text)
     elif res.status_code == 400:
-        print("Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
+        print("Champ Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
     elif res.status_code == 401:
-        print("Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
+        print("Champ Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
     elif res.status_code == 403:
-        print("Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
+        print("Champ Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
     elif res.status_code == 404:
-        print("Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
+        print("Champ Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
     elif res.status_code == 415:
-        print("Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
+        print("Champ Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
     elif res.status_code == 429:
-        print("Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
+        print("Champ Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
     elif res.status_code == 500:
-        print("Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
+        print("Champ Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
     elif res.status_code == 503:
-        print("Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")        
+        print("Champ Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")
     else:
         print("Unknown Error")
     return 0
@@ -90,21 +97,21 @@ def call_exp(user_id,champ_code):
     if res.status_code == 200:
         return json.loads(res.text)
     elif res.status_code == 400:
-        print("Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
+        print("Exp Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
     elif res.status_code == 401:
-        print("Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
+        print("Exp Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
     elif res.status_code == 403:
-        print("Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
+        print("Exp Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
     elif res.status_code == 404:
-        print("Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
+        print("Exp Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
     elif res.status_code == 415:
-        print("Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
+        print("Exp Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
     elif res.status_code == 429:
-        print("Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
+        print("Exp Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
     elif res.status_code == 500:
-        print("Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
+        print("Exp Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
     elif res.status_code == 503:
-        print("Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")        
+        print("Exp Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")
     else:
         print("Unknown Error")
     return 0
@@ -115,21 +122,47 @@ def call_match(gameId):
     if res.status_code == 200:
         return json.loads(res.text)
     elif res.status_code == 400:
-        print("Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
+        print("Match Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
     elif res.status_code == 401:
-        print("Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
+        print("Match Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
     elif res.status_code == 403:
-        print("Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
+        print("Match Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
     elif res.status_code == 404:
-        print("Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
+        print("Match Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
     elif res.status_code == 415:
-        print("Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
+        print("Match Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
     elif res.status_code == 429:
-        print("Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
+        print("vError) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
     elif res.status_code == 500:
-        print("Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
+        print("Match Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
     elif res.status_code == 503:
-        print("Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")        
+        print("Match Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")
+    else:
+        print("Unknown Error")
+    return 0
+
+def call_match_v5(gameId):
+    url = "https://asia.api.riotgames.com/lol/match/v5/matches/" + gameId
+    res = requests.get(url, headers={"X-RIOT-Token":tmp_key})
+    print(res.text)
+    if res.status_code == 200:
+        return json.loads(res.text)
+    elif res.status_code == 400:
+        print("Match_v5 Error) 400 (Bad Request) : This error indicates that there is a syntax error in the request and the request has therefore been denied.")
+    elif res.status_code == 401:
+        print("Match_v5 Error) : 401 (Unauthorized) This error indicates that the request being made did not contain the necessary authentication credentials (e.g., an API key) and therefore the client was denied access.")
+    elif res.status_code == 403:
+        print("Match_v5 Error) : 403 (Forbidden) This error indicates that the server understood the request but refuses to authorize it.")
+    elif res.status_code == 404:
+        print("Match_v5 Error) : 404 (Not Found) This error indicates that the server has not found a match for the API request being made.")
+    elif res.status_code == 415:
+        print("Match_v5 Error) : 415 (Unsupported Media Type) This error indicates that the server is refusing to service the request because the body of the request is in a format that is not supported.")
+    elif res.status_code == 429:
+        print("Match_v5 Error) : 429 (Rate Limit Exceeded) This error indicates that the application has exhausted its maximum number of allotted API calls allowed for a given duration.")
+    elif res.status_code == 500:
+        print("Match_v5 Error) : 500 (Internal Server Error) This error indicates an unexpected condition or exception which prevented the server from fulfilling an API request.")
+    elif res.status_code == 503:
+        print("Match_v5 Error) : 503 (Service Unavailable) This error indicates the server is currently unavailable to handle requests because of an unknown reason. The Service Unavailable response implies a temporary condition which will be alleviated after some delay.")
     else:
         print("Unknown Error")
     return 0
