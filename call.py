@@ -18,8 +18,8 @@ output_dict['user_name'] = summoner_json['name']
 output_dict['match_log'] = []
 n=0
 i=0
-for matches in matchlist_json:
 
+for matches in matchlist_json:
     if i==1:
         break;
     i = i + 1
@@ -36,10 +36,10 @@ for matches in matchlist_json:
             print("숙련도 : ",exp_json['championPoints'])
             match_json = api_tool.call_match(str(matches["gameId"]))
             #print(match_json)
-            match_timeline_json = api_tool.call_match_timeline(str(matches["gameId"]))
-            print(match_timeline_json)
-            with open('output.json', 'w') as outfile:
-                json.dump(match_timeline_json, outfile, indent=4)
+            #match_timeline_json = api_tool.call_match_timeline(str(matches["gameId"]))
+            #print(match_timeline_json)
+            #with open('output.json', 'w') as outfile:
+            #    json.dump(match_timeline_json, outfile, indent=4)
             # print(matchdetail_json.text)
             print("승패 : "+match_json['teams'][0]['win'])
 
