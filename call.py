@@ -2,8 +2,6 @@ import requests
 import json
 import api_tool
 
-api_key = "RGAPI-6a377f3a-7ddf-42fe-9f2c-bf1469161a10"
-
 summoner_json = api_tool.call_summoner()
 matchlist_json = api_tool.call_matchlist(summoner_json['accountId'])
 champ_json = api_tool.call_champ()
