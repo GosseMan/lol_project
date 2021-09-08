@@ -1,6 +1,9 @@
 import json
 import requests
 import time
+import os
+from io import BytesIO
+from PIL import Image
 api_key = "RGAPI-6a377f3a-7ddf-42fe-9f2c-bf1469161a10"
 tmp_key = "60ysuDs_5TzndzPkQa8fBT3XAikjhb05cAHcc9WQ-bd05b9e25qw5Dw6Yvh6CvGU1iD5L4xqfFNlnA"
 
@@ -17,8 +20,8 @@ def call_summoner(name):
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         print(res.text)
         while res.status_code == 429:
-            time.sleep(60)
             print('---(Code 429)Waiting---')
+            time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         return json.loads(res.text)
     except:
@@ -33,8 +36,8 @@ def call_matchlist(accountid, beginIndex, endIndex):
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         #print(res.text)
         while res.status_code == 429:
-            time.sleep(60)
             print('---(Code 429)Waiting---')
+            time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         return (json.loads(res.text)).get("matches")
     except:
@@ -42,18 +45,50 @@ def call_matchlist(accountid, beginIndex, endIndex):
         return 0
 
 def call_champ():
-    url = "http://ddragon.leagueoflegends.com/cdn/" + version + "/data/en_US/champion.json"
+    url = "http://ddragon.leagueoflegends.com/cdn/" + version + "/data/ko_KR/champion.json"
     res = requests.get(url, headers={"X-RIOT-Token":api_key})
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         #print(res.text)
         while res.status_code == 429:
-            time.sleep(60)
             print('---(Code 429)Waiting---')
+            time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
-        return (json.loads(res.text)).get("matches")
+        return json.loads(res.text)
     except:
         print("call_summoner Error" + res.text)
+
+def call_item():
+    url = "http://ddragon.leagueoflegends.com/cdn/"+version+"/data/ko_KR/item.json"
+    res = requests.get(url, headers={"X-RIOT-Token":api_key})
+    try:
+        res = requests.get(url, headers={"X-RIOT-Token":api_key})
+        #print(res.text)
+        while res.status_code == 429:
+            print('---(Code 429)Waiting---')
+            time.sleep(60)
+            res = requests.get(url, headers={"X-RIOT-Token": api_key})
+        return json.loads(res.text)
+    except:
+        print("call_summoner Error" + res.text)
+        return 0
+    return 0
+
+def call_spell():
+    url = "http://ddragon.leagueoflegends.com/cdn/"+version+"/data/ko_KR/summoner.json"
+    res = requests.get(url, headers={"X-RIOT-Token":api_key})
+    try:
+        res = requests.get(url, headers={"X-RIOT-Token":api_key})
+        #print(res.text)
+        while res.status_code == 429:
+            print('---(Code 429)Waiting---')
+            time.sleep(60)
+            res = requests.get(url, headers={"X-RIOT-Token": api_key})
+        return json.loads(res.text)
+    except:
+        print("call_summoner Error" + res.text)
+        return 0
+    return 0
 
 def call_exp(user_id,champ_code):
     url = "https://kr.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/"+user_id+"/by-champion/"+champ_code
@@ -62,8 +97,8 @@ def call_exp(user_id,champ_code):
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         #print(res.text)
         while res.status_code == 429:
-            time.sleep(60)
             print('---(Code 429)Waiting---')
+            time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         return (json.loads(res.text)).get("matches")
     except:
@@ -71,14 +106,15 @@ def call_exp(user_id,champ_code):
         return 0
     return 0
 
+
 def call_match(gameId):
     url = "https://kr.api.riotgames.com/lol/match/v4/matches/" + gameId
     res = requests.get(url, headers={"X-RIOT-Token":api_key})
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         while res.status_code == 429:
-            time.sleep(60)
             print('---(Code 429)Waiting---')
+            time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         return json.loads(res.text)
     except:
@@ -91,8 +127,8 @@ def call_match_v5(gameId):
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         #print(res.text)
         while res.status_code == 429:
-            time.sleep(60)
             print('---(Code 429)Waiting---')
+            time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         return (json.loads(res.text)).get("matches")
     except:
@@ -106,8 +142,8 @@ def call_match_timeline(gameId):
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         #print(res.text)
         while res.status_code == 429:
-            time.sleep(60)
             print('---(Code 429)Waiting---')
+            time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         return (json.loads(res.text)).get("matches")
     except:
@@ -124,12 +160,14 @@ def call_user_tier(division,tier,queue,page):
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         while res.status_code == 429:
-            time.sleep(60)
             print('---(Code 429)Waiting---')
+            time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         return json.loads(res.text)
     except:
         print('Error) Call Match')
+
+
 
     '''
     elif res.status_code == 400:
@@ -152,3 +190,58 @@ def call_user_tier(division,tier,queue,page):
         print("Unknown Error")
     return 0
     '''
+
+def save_images(subject, route):
+    # subject에는 champ, item, spell중 입력
+    # route에는 저장할 디렉토리경로
+    # ex) save_images('item', './IMG/items')
+    if not os.path.isdir(route):
+        os.makedirs(route)
+
+    if subject == 'champ':
+        champ_json = call_champ()
+        for champ_eng in champ_json['data']:
+            print(champ_eng)
+            champ_id = champ_json['data'][champ_eng]['key']
+            champ_name = champ_json['data'][champ_eng]['name']
+            url = "http://ddragon.leagueoflegends.com/cdn/" + version + "/img/champion/" + champ_eng + ".png"
+            res = requests.get(url)
+            img = Image.open(BytesIO(res.content))
+
+            img.save(route + "/" + champ_id + "_" + champ_name + ".png", 'PNG')
+            print(route + "/" + champ_id + "_" + champ_name + ".png", 'PNG')
+
+    if subject=='item':
+        item_json = call_item()
+        for item_id in item_json['data']:
+            item_name = item_json['data'][item_id]['name']
+            url = "http://ddragon.leagueoflegends.com/cdn/" + version + "/img/item/" + item_id + ".png"
+            res = requests.get(url)
+            img = Image.open(BytesIO(res.content))
+            img.save(route + "/" + item_id + "_" + item_name + ".png", 'PNG')
+            print(route + "/" + item_id + "_" + item_name + ".png", 'PNG')
+
+    if subject == 'spell':
+        spell_json = call_spell()
+        for spell_eng in spell_json['data']:
+            print(spell_eng)
+            spell_id = spell_json['data'][spell_eng]['key']
+            spell_name = spell_json['data'][spell_eng]['name']
+            url = "http://ddragon.leagueoflegends.com/cdn/" + version + "/img/spell/" + spell_eng + ".png"
+            res = requests.get(url)
+            img = Image.open(BytesIO(res.content))
+
+            img.save(route + "/" + spell_id + "_" + spell_name + ".png", 'PNG')
+            print(route + "/" + spell_id + "_" + spell_name + ".png", 'PNG')
+
+
+def main():
+    item_json = call_champ()
+    #print(item_json)
+
+    save_images('champ','./IMG/champs')
+    #img.save("test.png",'PNG')
+
+    return
+if __name__ == "__main__":
+    main()
