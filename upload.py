@@ -16,9 +16,6 @@ class uploader:
 
     def insert_match(self,insert_row):
         cursor = self.db.cursor(pymysql.cursors.DictCursor)
-        cursor = self.db.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("set names utf8")
-        self.db.commit()
         SQL_QUERY = """
         INSERT INTO LatestMatch(name, matchid, win, killn, death,assist,champ,item0,item1,item2,item3,item4,item5,item6,spell1,spell2)
         VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
@@ -28,7 +25,8 @@ class uploader:
         self.db.commit()
         return 0
 
-    def update_LatestMatch(name_p, match_p, win_p, kill_p, death_p, assist_p, champ_p, item0_p, item1_p, item2_p, item3_p, item4_p, item5_p, item6_p, spell1_p, spell2_p):
+    def update_LatestMatch(self, name_p, match_p, win_p, kill_p, death_p, assist_p, champ_p, item0_p, item1_p, item2_p, item3_p, item4_p, item5_p, item6_p, spell1_p, spell2_p):
+        cursor = self.db.cursor(pymysql.cursors.DictCursor)
         SQL_QUERY = """
         IF (SELECT 1=1 FROM LatestMatch where name = "{}") then
         BEGIN
@@ -49,7 +47,8 @@ class uploader:
         self.db.commit()
         return 0
 
-    def update_match(name_p, match_p, win_p, kill_p, death_p, assist_p, champ_p, item0_p, item1_p, item2_p, item3_p, item4_p, item5_p, item6_p, spell1_p, spell2_p):
+    def update_match(self, name_p, match_p, win_p, kill_p, death_p, assist_p, champ_p, item0_p, item1_p, item2_p, item3_p, item4_p, item5_p, item6_p, spell1_p, spell2_p):
+        cursor = self.db.cursor(pymysql.cursors.DictCursor)
         SQL_QUERY = """
         UPDATE LatestMatch SET matchid={}, win={}, killn={}, death={},assist={},champ={},item0={},item1={},item2={},item3={},item4={},item5={},item6={},spell1={},spell2={}
         where name="{}"
@@ -64,6 +63,7 @@ def main():
     pw = "gosseyongwon"
     db_name = "test"
     latest_up = uploader(host,user,pw,db_name)
+
     return
 if __name__ == "__main__":
     main()

@@ -155,8 +155,11 @@ def call_user_tier(division,tier,queue,page):
     #tier에는 DIAMOND, PLATINUM, GOLD, SILVER, BRONZE, IRON
     #queue에는 RANKED_SOLO_5x5, RANKED_FLEX_SR, RANKED_FLEX_TT
     #page는 출력할 page수
-    url = 'https://kr.api.riotgames.com/lol/league/v4/entries/'+queue+'/'+tier+'/'+division+'?page='+str(page)
-    res = requests.get(url,headers={"X-RIOT-Token":api_key})
+    #챌린저, 그랜드마스터, 마스터 검색시에는 CHALLENGER, GRANDMASTER, MASTER 라고 치면됨
+    if tier in ['CHALLENGER', 'GRANDMASTER', 'MASTER', 'challenger', 'grandmaster', 'master']:
+        url = 'https://kr.api.riotgames.com/lol/league/v4/' + tier.lower() + 'leagues/by-queue/' + queue
+    else:
+        url = 'https://kr.api.riotgames.com/lol/league/v4/entries/' + queue + '/' + tier.upper() + '/' + division + '?page='+str(page)
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         while res.status_code == 429:
@@ -203,11 +206,6 @@ def save_images(subject, route):
         for champ_eng in champ_json['data']:
             print(champ_eng)
             champ_id = champ_json['data'][champ_eng]['key']
-            champ_name = champ_json['data'][champ_eng]['name']
-            url = "http://ddragon.leagueoflegends.com/cdn/" + version + "/img/champion/" + champ_eng + ".png"
-            res = requests.get(url)
-            img = Image.open(BytesIO(res.content))
-
             img.save(route + "/" + champ_id + "_" + champ_name + ".png", 'PNG')
             print(route + "/" + champ_id + "_" + champ_name + ".png", 'PNG')
 
