@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
 import json
 import requests
 import time
 import os
 from io import BytesIO
-from PIL import Image
+#from PIL import Image
 api_key = "RGAPI-6a377f3a-7ddf-42fe-9f2c-bf1469161a10"
 tmp_key = "60ysuDs_5TzndzPkQa8fBT3XAikjhb05cAHcc9WQ-bd05b9e25qw5Dw6Yvh6CvGU1iD5L4xqfFNlnA"
 
@@ -27,11 +29,13 @@ def call_summoner(name):
     except:
         print("call_summoner Error" + res.text)
         return 0
+#추가조건 걸려면 수정
+def call_matchlist(puuid, start, count):
+    #v4
+    #url = "https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountId + "?endIndex=" + str(endIndex) + "&beginIndex=" + str(beginIndex)
 
-def call_matchlist(accountid, beginIndex, endIndex):
-    url = "https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountid + "?endIndex=" + str(endIndex) + "&beginIndex=" + str(beginIndex)
-    # v5로 바꿔야 할거같음
-    # URL_match = "https://kr.api.riotgames.com/lol/match/v5/matches/by-puuid/" +summoner_json+['puuid']+"/ids"
+    #v5
+    url = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/"+puuid+"/ids?start=" + start + "&count=" + count
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         #print(res.text)
@@ -106,25 +110,11 @@ def call_exp(user_id,champ_code):
         return 0
     return 0
 
-
 def call_match(gameId):
-    url = "https://kr.api.riotgames.com/lol/match/v4/matches/" + gameId
-    res = requests.get(url, headers={"X-RIOT-Token":api_key})
-    try:
-        res = requests.get(url, headers={"X-RIOT-Token":api_key})
-        while res.status_code == 429:
-            print('---(Code 429)Waiting---')
-            time.sleep(60)
-            res = requests.get(url, headers={"X-RIOT-Token": api_key})
-        return json.loads(res.text)
-    except:
-        print('Error) Call Match')
-
-def call_match_v5(gameId):
     url = "https://asia.api.riotgames.com/lol/match/v5/matches/" + gameId
-    res = requests.get(url, headers={"X-RIOT-Token":tmp_key})
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
+        pirnt(res)
         #print(res.text)
         while res.status_code == 429:
             print('---(Code 429)Waiting---')
@@ -136,11 +126,9 @@ def call_match_v5(gameId):
         return 0
 
 def call_match_timeline(gameId):
-    url = "https://kr.api.riotgames.com/lol/match/v4/timelines/by-match/" + gameId
-    res = requests.get(url, headers={"X-RIOT-Token":api_key})
+    url = "https://asia.api.riotgames.com/lol/match/v5/matches/" + gameId + "/timeline"
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
-        #print(res.text)
         while res.status_code == 429:
             print('---(Code 429)Waiting---')
             time.sleep(60)
@@ -234,10 +222,10 @@ def save_images(subject, route):
 
 
 def main():
-    item_json = call_champ()
+    #item_json = call_champ()
     #print(item_json)
-
-    save_images('champ','./IMG/champs')
+    print(call_match_timeline("KR_5895090394"))
+    #save_images('champ','./IMG/champs')
     #img.save("test.png",'PNG')
 
     return
