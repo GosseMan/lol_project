@@ -127,17 +127,19 @@ def call_match(gameId):
 
 def call_match_timeline(gameId):
     url = "https://asia.api.riotgames.com/lol/match/v5/matches/" + gameId + "/timeline"
-    print(url)
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         while res.status_code == 429:
             print('---(Code 429)Waiting---')
             time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
-        print("here")
         with open("timeline.json", "w") as f:
             json.dump(json.loads(res.text), f,indent = 4, sort_keys = True)
-
+        print(json.loads(res.text).keys())
+        print(json.loads(res.text).get("info").keys())
+        print(json.loads(res.text).get("info").get("frames")[0].keys())
+        print(json.loads(res.text).get("info").get("frames")[1]['timestamp'])
+        print(json.loads(res.text).get("info").get("frames")[0]['participantFrames'].keys())
         return (json.loads(res.text)).get("info")
     except:
         print("call_summoner Error" + res.text)
@@ -229,7 +231,7 @@ def save_images(subject, route):
 def main():
     #item_json = call_champ()
     #print(item_json)
-    print(call_match_timeline("KR_5895090394"))
+    call_match_timeline("KR_5895090394")
     #save_images('champ','./IMG/champs')
     #img.save("test.png",'PNG')
 
