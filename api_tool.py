@@ -20,7 +20,6 @@ def call_summoner(name):
     url  = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+name
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
-        print(res.text)
         while res.status_code == 429:
             print('---(Code 429)Waiting---')
             time.sleep(60)
@@ -35,7 +34,7 @@ def call_matchlist(puuid, start, count):
     #url = "https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountId + "?endIndex=" + str(endIndex) + "&beginIndex=" + str(beginIndex)
 
     #v5
-    url = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/"+puuid+"/ids?start=" + start + "&count=" + count
+    url = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/"+puuid+"/ids?start=" + str(start) + "&count=" + str(count)
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
         #print(res.text)
@@ -43,7 +42,7 @@ def call_matchlist(puuid, start, count):
             print('---(Code 429)Waiting---')
             time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
-        return (json.loads(res.text)).get("matches")
+        return json.loads(res.text)
     except:
         print("call_summoner Error" + res.text)
         return 0
@@ -112,15 +111,15 @@ def call_exp(user_id,champ_code):
 
 def call_match(gameId):
     url = "https://asia.api.riotgames.com/lol/match/v5/matches/" + gameId
+    res = requests.get(url, headers={"X-RIOT-Token": api_key})
     try:
         res = requests.get(url, headers={"X-RIOT-Token":api_key})
-        pirnt(res)
         #print(res.text)
         while res.status_code == 429:
             print('---(Code 429)Waiting---')
             time.sleep(60)
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
-        return (json.loads(res.text)).get("matches")
+        return json.loads(res.text)
     except:
         print("call_summoner Error" + res.text)
         return 0
@@ -140,17 +139,54 @@ def call_match_timeline(gameId):
         print(json.loads(res.text).get("info").get("frames")[0].keys())
         print(json.loads(res.text).get("info").get("frames")[1]['timestamp'])
         print(json.loads(res.text).get("info").get("frames")[0]['participantFrames'].keys())
+
+        print(json.loads(res.text).get("metadata"))
         return (json.loads(res.text)).get("info")
     except:
         print("call_summoner Error" + res.text)
         return 0
+def call_user_challenger(queue):
+    url = 'https://kr.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/' + queue
+    try:
+        res = requests.get(url, headers={"X-RIOT-Token":api_key})
+        while res.status_code == 429:
+            print('---(Code 429)Waiting---')
+            time.sleep(60)
+            res = requests.get(url, headers={"X-RIOT-Token": api_key})
+        return json.loads(res.text)
+    except:
+        print('Error) Call Challengers')
+
+def call_user_grandmaster(queue):
+    url = 'https://kr.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/' + queue
+    try:
+        res = requests.get(url, headers={"X-RIOT-Token":api_key})
+        while res.status_code == 429:
+            print('---(Code 429)Waiting---')
+            time.sleep(60)
+            res = requests.get(url, headers={"X-RIOT-Token": api_key})
+        return json.loads(res.text)
+    except:
+        print('Error) Call Grandmasters')
+
+def call_user_master(queue):
+    url = 'https://kr.api.riotgames.com/lol/league/v4/masterleagues/by-queue/' + queue
+    try:
+        res = requests.get(url, headers={"X-RIOT-Token":api_key})
+        while res.status_code == 429:
+            print('---(Code 429)Waiting---')
+            time.sleep(60)
+            res = requests.get(url, headers={"X-RIOT-Token": api_key})
+        return json.loads(res.text)
+    except:
+        print('Error) Call Masters')
 
 def call_user_tier(division,tier,queue,page):
     #division에는 I, II, III, IV
     #tier에는 DIAMOND, PLATINUM, GOLD, SILVER, BRONZE, IRON
     #queue에는 RANKED_SOLO_5x5, RANKED_FLEX_SR, RANKED_FLEX_TT
     #page는 출력할 page수
-    #챌린저, 그랜드마스터, 마스터 검색시에는 CHALLENGER, GRANDMASTER, MASTER 라고 치면됨
+    #챌린저, 그랜드마스터, 마스터 검색시에는 타함수 사용
     if tier in ['CHALLENGER', 'GRANDMASTER', 'MASTER', 'challenger', 'grandmaster', 'master']:
         url = 'https://kr.api.riotgames.com/lol/league/v4/' + tier.lower() + 'leagues/by-queue/' + queue
     else:
@@ -163,9 +199,7 @@ def call_user_tier(division,tier,queue,page):
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         return json.loads(res.text)
     except:
-        print('Error) Call Match')
-
-
+        print('Error) Call Users')
 
     '''
     elif res.status_code == 400:
