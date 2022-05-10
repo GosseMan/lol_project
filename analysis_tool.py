@@ -27,6 +27,8 @@ def check_lane_n(summonerName, n):
     match_list = api_tool.call_matchlist(puuid,1,20)
     pos_dict = {"TOP":0, "JUNGLE":0, "MIDDLE":0, "BOTTOM":0, "UTILITY":0, "UNKNOWN":0}
     k=0
+    if puuid == None:
+        return "", "puuid None"
     for i in match_list:
         match_json = api_tool.call_match(i)
         #print(match_json.get("info").get("queueId"))

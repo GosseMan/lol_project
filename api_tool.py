@@ -32,7 +32,9 @@ def call_summoner(name):
 def call_matchlist(puuid, start, count):
     #v4
     #url = "https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountId + "?endIndex=" + str(endIndex) + "&beginIndex=" + str(beginIndex)
-
+    if puuid == None:
+        print("None")
+        return
     #v5
     url = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/"+puuid+"/ids?start=" + str(start) + "&count=" + str(count)
     try:
