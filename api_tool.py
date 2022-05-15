@@ -136,13 +136,13 @@ def call_match_timeline(gameId):
             res = requests.get(url, headers={"X-RIOT-Token": api_key})
         with open("timeline.json", "w") as f:
             json.dump(json.loads(res.text), f,indent = 4, sort_keys = True)
-        print(json.loads(res.text).keys())
-        print(json.loads(res.text).get("info").keys())
-        print(json.loads(res.text).get("info").get("frames")[0].keys())
-        print(json.loads(res.text).get("info").get("frames")[1]['timestamp'])
-        print(json.loads(res.text).get("info").get("frames")[0]['participantFrames'].keys())
+        #print(json.loads(res.text).keys())
+        #print(json.loads(res.text).get("info").keys())
+        #print(json.loads(res.text).get("info").get("frames")[0].keys())
+        #print(json.loads(res.text).get("info").get("frames")[1]['timestamp'])
+        #print(json.loads(res.text).get("info").get("frames")[0]['participantFrames'].keys())
 
-        print(json.loads(res.text).get("metadata"))
+        #print(json.loads(res.text).get("metadata"))
         return (json.loads(res.text)).get("info")
     except:
         print("call_summoner Error" + res.text)
