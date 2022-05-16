@@ -6,6 +6,7 @@ import time
 import os
 from io import BytesIO
 import api_tool
+import matplotlib.pyplot as plt
 
 #Both individualPosition and teamPosition are computed by the game server and are different versions of the most likely position played by a player. The individualPosition is the best guess for which position the player actually played in isolation of anything else. The teamPosition is the best guess for which position the player actually played if we add the constraint that each team must have one top player, one jungle, one middle, etc. Generally the recommendation is to use the teamPosition field over the individualPosition field.
 def check_lane(summonerName, gameId):
@@ -27,7 +28,7 @@ def check_lane_n(summonerName, n):
     summonerName = summonerName.replace(" ", "").strip().lower()
     puuid = summoner_json.get("puuid")
     match_list = api_tool.call_matchlist(puuid,1,20)
-    pos_dict = {"TOP":0, "JUNGLE":0, "MIDDLE":0, "BOTTOM":0, "UTILITY":0, "UNKNOWN":0}
+    pos_dict = {"TOP":0, "JUNGLE":0, "MIDDLE":0, "BOTTOM":0, "UTILITY":0, "UNKNOWN":0, "Invalid":0}
     k=0
     if puuid == None:
         return "", "puuid None"
@@ -37,7 +38,7 @@ def check_lane_n(summonerName, n):
         if match_json.get("info").get("queueId")==420:
             k+=1
             lane = check_lane(summonerName,i)
-            #print(lane)
+            print(lane)
             pos_dict[lane]+=1
         if k==n:
             break
@@ -68,13 +69,17 @@ def challenger_list():
     return chal_list
 
 def main():
-    #check_lane_n("칼과 창 방패" ,10)
+    #check_lane_n("omgabie" ,10)
+
     # 1. challenger list json file 생성
     #chal_list = challenger_list()
+
+    # 2. challenger position list
+    '''
     file_path = "./challenger_list"
     with open(file_path) as f:
         challenger_list = f.readlines()
-    # 2. challenger position list
+        
     f = open("./challenger_position_list", 'w')
     for summonerName in challenger_list:
         summonerName = summonerName.replace(" ", "").strip('\n').strip().lower()
@@ -84,6 +89,35 @@ def main():
         f.write('\t')
         f.write(position)
         f.write('\n')
+    f.close()
+    '''
+    # 3. challenger position visualization
+    # To-Do
+    file_path = "./challenger_position_list"
+    f = open(file_path)
+    pos_dict={}
+    chal_cnt = 0
+    while True:
+        line = f.readline().strip().split('\t')
+        if len(line) <= 1:
+            break
+        id = line[0]
+        pos = line[1]
+        if pos in ['MIDDLE', 'UTILITY', 'BOTTOM', 'JUNGLE', 'TOP']:
+            chal_cnt += 1
+            pos_dict[pos] = pos_dict.get(pos, 0) + 1
+    f.close()
+    print(pos_dict)
+    ratio = []
+    labels = ['MIDDLE', 'UTILITY', 'BOTTOM', 'JUNGLE', 'TOP']
+    for i in pos_dict:
+        ratio.append(pos_dict.get(i))
+    print(ratio)
+    colors = ['red', 'violet', 'purple', 'olivedrab', 'dodgerblue']
+    plt.pie(ratio, labels=labels, autopct = "%.1f%%", colors = colors)
+    plt.show()
+    # 챌린저 포지션 비율 시각화
+    # 정글러 추출 및 챔피언*시간대 별 현위치 시각화
     return
 
 if __name__ == "__main__":
