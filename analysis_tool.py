@@ -38,7 +38,7 @@ def check_lane_n(summonerName, n):
         if match_json.get("info").get("queueId")==420:
             k+=1
             lane = check_lane(summonerName,i)
-            print(lane)
+            #print(lane)
             pos_dict[lane]+=1
         if k==n:
             break
@@ -68,6 +68,39 @@ def challenger_list():
     f.close()
     return chal_list
 
+# 해당 유저 최근 10 게임중 랭크에서 정글 플레이한 경우 동선 이미지 저장
+def jungle_move_map(summonerName):
+    summoner_json = api_tool.call_summoner(summonerName)
+    summonerName = summonerName.replace(" ", "").strip().lower()
+    puuid = summoner_json.get("puuid")
+    match_list = api_tool.call_matchlist(puuid,1,10)
+    k = 0
+    if puuid == None:
+        return
+    for match in match_list:
+        match_json = api_tool.call_match(match)
+        # print(match_json.get("info").get("queueId"))
+        for i in match_json.get("info").get("participants"):
+            if i.get("summonerName").replace(" ", "").strip().lower().encode('utf-8') == summonerName:
+                if i.get("individualPosition") == "JUNGLE": # 정글인 게임
+                    timeline_json = api_tool.call_match_timeline(match)
+                    print(i.get("championName"))
+
+                    for participant in timeline_json.get("participants"):
+                        if participant.get("puuid") == puuid:
+                            participantId = participant.get("participantId") # 해당 게임에서의 참가자번호
+                            break
+                    print(participantId)
+                    for idx, t in enumerate(timeline_json.get("frames")):
+                        print("Timeframe : " + str(idx))
+                        print("x : "+str(t.get("participantFrames").get(str(participantId)).get("position").get("x")))
+                        print("y : "+str(t.get("participantFrames").get(str(participantId)).get("position").get("y")))
+
+                        # 이 번호를 가지고 timeline_json 에서 timeframe별 좌표 구하면됨
+    return
+
+
+
 def main():
     #check_lane_n("omgabie" ,10)
 
@@ -93,6 +126,7 @@ def main():
     '''
     # 3. challenger position visualization
     # To-Do
+    '''
     file_path = "./challenger_position_list"
     f = open(file_path)
     pos_dict={}
@@ -116,7 +150,9 @@ def main():
     colors = ['red', 'violet', 'purple', 'olivedrab', 'dodgerblue']
     plt.pie(ratio, labels=labels, autopct = "%.1f%%", colors = colors)
     plt.show()
-    # 챌린저 포지션 비율 시각화
+    '''
+    #4. 챌린저 최근경기 동선 이미지 시각화
+    jungle_move_map("가쎄삼다")
     # 정글러 추출 및 챔피언*시간대 별 현위치 시각화
     return
 
