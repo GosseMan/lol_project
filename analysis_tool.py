@@ -7,6 +7,7 @@ import os
 from io import BytesIO
 import api_tool
 import matplotlib.pyplot as plt
+#import cv2
 
 #Both individualPosition and teamPosition are computed by the game server and are different versions of the most likely position played by a player. The individualPosition is the best guess for which position the player actually played in isolation of anything else. The teamPosition is the best guess for which position the player actually played if we add the constraint that each team must have one top player, one jungle, one middle, etc. Generally the recommendation is to use the teamPosition field over the individualPosition field.
 def check_lane(summonerName, gameId):
@@ -69,11 +70,13 @@ def challenger_list():
     return chal_list
 
 # 해당 유저 최근 10 게임중 랭크에서 정글 플레이한 경우 동선 이미지 저장
-def jungle_move_map(summonerName):
+def jungle_move_map(summonerName, t):
     summoner_json = api_tool.call_summoner(summonerName)
     summonerName = summonerName.replace(" ", "").strip().lower()
     puuid = summoner_json.get("puuid")
     match_list = api_tool.call_matchlist(puuid,1,10)
+    map = cv2.imread("./IMG/map/map.png")
+    plt.imshow(map)
     k = 0
     if puuid == None:
         return
@@ -83,6 +86,7 @@ def jungle_move_map(summonerName):
         for i in match_json.get("info").get("participants"):
             if i.get("summonerName").replace(" ", "").strip().lower().encode('utf-8') == summonerName:
                 if i.get("individualPosition") == "JUNGLE": # 정글인 게임
+                    timestamp_num = 0
                     timeline_json = api_tool.call_match_timeline(match)
                     print(i.get("championName"))
 
@@ -91,11 +95,18 @@ def jungle_move_map(summonerName):
                             participantId = participant.get("participantId") # 해당 게임에서의 참가자번호
                             break
                     print(participantId)
-                    for idx, t in enumerate(timeline_json.get("frames")):
+                    for idx, stamp in enumerate(timeline_json.get("frames")):
+                        if timestamp_num > t:
+                            break;
                         print("Timeframe : " + str(idx))
-                        print("x : "+str(t.get("participantFrames").get(str(participantId)).get("position").get("x")))
-                        print("y : "+str(t.get("participantFrames").get(str(participantId)).get("position").get("y")))
-
+                        x=stamp.get("participantFrames").get(str(participantId)).get("position").get("x")
+                        y=stamp.get("participantFrames").get(str(participantId)).get("position").get("y")
+                        print("x : "+str(x))
+                        print("y : "+str(y))
+                        plt.plot(x, y, 'bo')
+                        plt.text(x*1.01, y*1.01, idx, fontsize=12)
+                        timestamp_num += 1
+                    plt.show()
                         # 이 번호를 가지고 timeline_json 에서 timeframe별 좌표 구하면됨
     return
 
@@ -152,7 +163,7 @@ def main():
     plt.show()
     '''
     #4. 챌린저 최근경기 동선 이미지 시각화
-    jungle_move_map("가쎄삼다")
+    jungle_move_map("가쎄삼다", 3)
     # 정글러 추출 및 챔피언*시간대 별 현위치 시각화
     return
 

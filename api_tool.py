@@ -6,8 +6,12 @@ import time
 import os
 from io import BytesIO
 #from PIL import Image
-api_key = "RGAPI-6a377f3a-7ddf-42fe-9f2c-bf1469161a10"
-tmp_key = "60ysuDs_5TzndzPkQa8fBT3XAikjhb05cAHcc9WQ-bd05b9e25qw5Dw6Yvh6CvGU1iD5L4xqfFNlnA"
+api_path = "./apikey.txt"
+
+with open(api_path) as f:
+    api_key = f.readlines()[0]
+f.close()
+print(api_key)
 
 def latest_version():
     version_url = requests.get('https://ddragon.leagueoflegends.com/api/versions.json')
