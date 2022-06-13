@@ -7,7 +7,7 @@ import os
 from io import BytesIO
 import api_tool
 import matplotlib.pyplot as plt
-#import cv2
+import cv2
 
 #Both individualPosition and teamPosition are computed by the game server and are different versions of the most likely position played by a player. The individualPosition is the best guess for which position the player actually played in isolation of anything else. The teamPosition is the best guess for which position the player actually played if we add the constraint that each team must have one top player, one jungle, one middle, etc. Generally the recommendation is to use the teamPosition field over the individualPosition field.
 def check_lane(summonerName, gameId):
@@ -70,26 +70,29 @@ def challenger_list():
     return chal_list
 
 # 해당 유저 최근 10 게임중 랭크에서 정글 플레이한 경우 동선 이미지 저장
-def jungle_move_map(summonerName, t):
+def jungle_move_map(summonerName, t, out_path):
     summoner_json = api_tool.call_summoner(summonerName)
     summonerName = summonerName.replace(" ", "").strip().lower()
     puuid = summoner_json.get("puuid")
-    match_list = api_tool.call_matchlist(puuid,1,10)
-    map = cv2.imread("./IMG/map/map.png")
-    plt.imshow(map)
+    match_list = api_tool.call_matchlist(puuid,1,8)
+    map_img = cv2.imread("./IMG/map/map.png", cv2.IMREAD_COLOR)
+    if not os.path.isdir(out_path):
+        os.makedirs(out_path)
+    resized_map = cv2.resize(map_img, (1600,1600),cv2.INTER_LINEAR)
+    cv2.imwrite('./IMG/map/resized_map.png', resized_map)
     k = 0
     if puuid == None:
         return
     for match in match_list:
         match_json = api_tool.call_match(match)
-        # print(match_json.get("info").get("queueId"))
         for i in match_json.get("info").get("participants"):
-            if i.get("summonerName").replace(" ", "").strip().lower().encode('utf-8') == summonerName:
+            if i.get("summonerName").replace(" ", "").strip().lower() == summonerName:
+                print(i.get("individualPosition"))
                 if i.get("individualPosition") == "JUNGLE": # 정글인 게임
                     timestamp_num = 0
                     timeline_json = api_tool.call_match_timeline(match)
                     print(i.get("championName"))
-
+                    map_img = cv2.imread('./IMG/map/resized_map.png')
                     for participant in timeline_json.get("participants"):
                         if participant.get("puuid") == puuid:
                             participantId = participant.get("participantId") # 해당 게임에서의 참가자번호
@@ -103,10 +106,19 @@ def jungle_move_map(summonerName, t):
                         y=stamp.get("participantFrames").get(str(participantId)).get("position").get("y")
                         print("x : "+str(x))
                         print("y : "+str(y))
+                        n_x = round(x/10)
+                        n_y = round(y/10)
+                        cv2.line(map_img, (n_x, n_y), (n_x, n_y), (255, 0, 0), 20)
+                        plt.xlim(0, 16000)
+                        plt.ylim(0, 16000)
                         plt.plot(x, y, 'bo')
                         plt.text(x*1.01, y*1.01, idx, fontsize=12)
                         timestamp_num += 1
+                    print(map_img)
+                    cv2.imwrite('./IMG/tmp/tmp.png', map_img)
+                    cv2.imwrite(out_path + '/' + summonerName + str(k) + '.png', map_img)
                     plt.show()
+                    k += 1
                         # 이 번호를 가지고 timeline_json 에서 timeframe별 좌표 구하면됨
     return
 
@@ -163,7 +175,7 @@ def main():
     plt.show()
     '''
     #4. 챌린저 최근경기 동선 이미지 시각화
-    jungle_move_map("가쎄삼다", 3)
+    jungle_move_map("가쎄다", 5, "./IMG/tmp")
     # 정글러 추출 및 챔피언*시간대 별 현위치 시각화
     return
 

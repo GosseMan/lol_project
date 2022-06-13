@@ -11,7 +11,6 @@ api_path = "./apikey.txt"
 with open(api_path) as f:
     api_key = f.readlines()[0]
 f.close()
-print(api_key)
 
 def latest_version():
     version_url = requests.get('https://ddragon.leagueoflegends.com/api/versions.json')
